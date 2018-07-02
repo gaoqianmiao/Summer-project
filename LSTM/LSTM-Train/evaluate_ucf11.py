@@ -9,7 +9,7 @@ print 'GPU Lock Acquired'
 from LSTM-model.actrec import train
 
 def main(job_id, params):
-    print 'Anything printed here will end up in the output directory for job #%d' % job_id
+    print('Anything printed here will end up in the output directory for job #%d' % job_id)
     print params
 
     trainerr, validerr, testerr = train(dim_out=params['dim_out'][0],
@@ -86,5 +86,5 @@ if __name__ == '__main__':
 
     main(0, options)
     util.gpu_util.FreeGPU(board)
-    print 'GPU freed'
+    print('GPU freed')
 
