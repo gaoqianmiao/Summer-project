@@ -2,9 +2,9 @@ import numpy
 import sys
 import argparse
 
-import LSTM-Train.gpu_util
-board = LSTM-Train.gpu_util.LockGPU()
-print 'GPU Lock Acquired'
+import LSTM-Provider.gpu_util
+board = LSTM-Provider.gpu_util.LockGPU()
+print('GPU Lock Acquired')
 
 from LSTM-model.actrec import train
 
@@ -85,6 +85,6 @@ if __name__ == '__main__':
         options.update(eval("{%s}"%sys.argv[1]))
 
     main(0, options)
-    util.gpu_util.FreeGPU(board)
+    LSTM-Provider.gpu_util.FreeGPU(board)
     print('GPU freed')
 
