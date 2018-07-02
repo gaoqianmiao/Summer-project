@@ -2,7 +2,7 @@ import numpy
 import sys
 import argparse
 
-import LSTM-Provider.gpu_util
+from LSTM-Provider import gpu_util
 #board = LSTM-Provider.gpu_util.LockGPU()
 print('GPU Lock Acquired')
 
