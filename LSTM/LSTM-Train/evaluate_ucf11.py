@@ -2,11 +2,11 @@ import numpy
 import sys
 import argparse
 
-import LSTM_train.gpu_util
-board = LSTM_train.gpu_util.LockGPU()
+import LSTM-Train.gpu_util
+board = LSTM-Train.gpu_util.LockGPU()
 print 'GPU Lock Acquired'
 
-from src.actrec import train
+from LSTM-model.actrec import train
 
 def main(job_id, params):
     print 'Anything printed here will end up in the output directory for job #%d' % job_id
