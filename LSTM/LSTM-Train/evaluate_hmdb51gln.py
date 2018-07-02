@@ -3,7 +3,7 @@ import sys
 import argparse
 
 import LSTM-Provider.gpu_util
-board = LSTM-Provider.gpu_util.LockGPU()
+#board = LSTM-Provider.gpu_util.LockGPU()
 print('GPU Lock Acquired')
 
 from src.actrec import train
