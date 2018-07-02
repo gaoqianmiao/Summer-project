@@ -2,15 +2,15 @@ import numpy
 import sys
 import argparse
 
-import util.gpu_util
-board = util.gpu_util.LockGPU()
-print 'GPU Lock Acquired'
+import LSTM-Provider.gpu_util
+board = LSTM-Provider.gpu_util.LockGPU()
+print('GPU Lock Acquired')
 
 from src.actrec import train
 
 def main(job_id, params):
-    print 'Anything printed here will end up in the output directory for job #%d' % job_id
-    print params
+    print('Anything printed here will end up in the output directory for job #%d' % job_id)
+    print(params)
 
     trainerr, validerr, testerr = train(dim_out=params['dim_out'][0],
                                         ctx_dim=params['ctx_dim'][0],
@@ -85,6 +85,6 @@ if __name__ == '__main__':
         options.update(eval("{%s}"%sys.argv[1]))
 
     main(0, options)
-    util.gpu_util.FreeGPU(board)
-    print 'GPU freed'
+    LSTM-Provider.gpu_util.FreeGPU(board)
+    print('GPU freed')
 
