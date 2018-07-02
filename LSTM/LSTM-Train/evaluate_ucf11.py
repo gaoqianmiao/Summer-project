@@ -2,8 +2,8 @@ import numpy
 import sys
 import argparse
 
-import util.gpu_util
-board = util.gpu_util.LockGPU()
+import LSTM_train.gpu_util
+board = LSTM_train.gpu_util.LockGPU()
 print 'GPU Lock Acquired'
 
 from src.actrec import train
