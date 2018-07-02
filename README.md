@@ -24,7 +24,6 @@ Some basic command-line tools:
 References
 ==========
 
-**"
 **"C3D Model for Keras."** 
 Tran, Du, et al. "Learning Spatiotemporal Features With 3D Convolutional Networks." Proceedings of the IEEE International Conference on Computer Vision. 2015.
 
