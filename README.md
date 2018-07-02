@@ -31,20 +31,7 @@ Tran, Du, et al. "Learning Spatiotemporal Features With 3D Convolutional Network
 **"Action Recognition using Visual Attention."**  
 Shikhar Sharma, Ryan Kiros, Ruslan Salakhutdinov. *[arXiv](http://arxiv.org/abs/1511.04119)*
 
-    @article{sharma2015attention,
-        title={Action Recognition using Visual Attention},
-        author={Sharma, Shikhar and Kiros, Ryan and Salakhutdinov, Ruslan},
-        journal={arXiv preprint arXiv:1511.04119},
-        year={2015}
-    } 
 
 **"Show, Attend and Tell: Neural Image Caption Generation with Visual Attention."**  
 Kelvin Xu, Jimmy Ba, Ryan Kiros, Kyunghyun Cho, Aaron Courville, Ruslan
 Salakhutdinov, Richard Zemel, Yoshua Bengio. *To appear ICML (2015)*
-
-    @article{Xu2015show,
-        title={Show, Attend and Tell: Neural Image Caption Generation with Visual Attention},
-        author={Xu, Kelvin and Ba, Jimmy and Kiros, Ryan and Cho, Kyunghyun and Courville, Aaron and Salakhutdinov, Ruslan and Zemel, Richard and Bengio, Yoshua},
-        journal={arXiv preprint arXiv:1502.03044},
-        year={2015}
-    }
