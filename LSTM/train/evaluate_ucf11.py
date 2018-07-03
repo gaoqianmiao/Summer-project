@@ -85,6 +85,6 @@ if __name__ == '__main__':
         options.update(eval("{%s}"%sys.argv[1]))
 
     main(0, options)
-    util.gpu_util.FreeGPU(board)
+    dataprovider.gpu_util.FreeGPU(board)
     print('GPU freed')
 
