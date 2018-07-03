@@ -16,11 +16,11 @@ from collections import OrderedDict
 
 import warnings
 
-from util.data_handler import DataHandler
-from util.data_handler import TrainProto
-from util.data_handler import TestTrainProto
-from util.data_handler import TestValidProto
-from util.data_handler import TestTestProto
+from dataprovider.data_handler import DataHandler
+from dataprovider.data_handler import TrainProto
+from dataprovider.data_handler import TestTrainProto
+from dataprovider.data_handler import TestValidProto
+from dataprovider.data_handler import TestTestProto
 
 '''
 Theano shared variables require GPUs, so to
@@ -670,7 +670,7 @@ def train(dim_out=100, # hidden layer dim for outputs
         num_test_test_batches += 1
     print('-----')
 
-    print 'Building model'
+    print('Building model')
     params = init_params(model_options)
     # reload parameters
     if reload_ and os.path.exists(saveto):
