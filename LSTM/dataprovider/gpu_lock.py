@@ -200,9 +200,9 @@ if __name__ == "__main__":
                 print("Failed to free lock, but it wasn't actually set?")
     elif '--noverbose' in sys.argv:
         stats = nvidia_gpu_stats()        
-        print div
+        print(div)
         print("%s board users:" % 'abc')
-        print div       
+        print(div)      
         for id in board_ids():         
             print("      Board %d {Use:%s; Mem:%s; Temp:%s}: %s" % (id, stats[0][id], stats[1][id], stats[2][id], owner_of_lock(id)))
         print(div + '\n')
