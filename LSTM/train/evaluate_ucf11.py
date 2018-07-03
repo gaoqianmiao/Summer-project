@@ -6,7 +6,7 @@ import dataprovider.gpu_util
 #board = util.gpu_util.LockGPU()
 print('GPU Lock Acquired')
 
-from src.actrec import train
+from model.actrec import train
 
 def main(job_id, params):
     print('Anything printed here will end up in the output directory for job #%d' % job_id)
