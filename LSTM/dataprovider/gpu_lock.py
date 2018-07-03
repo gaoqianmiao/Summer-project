@@ -183,7 +183,7 @@ if __name__ == "__main__":
         else:
             print(- 1)
     elif '--id-to-hog' in sys.argv:
-        print obtain_lock_id_to_hog()
+        print(obtain_lock_id_to_hog())
     elif '--free' in sys.argv:
         try:
             id = int(sys.argv[2])
