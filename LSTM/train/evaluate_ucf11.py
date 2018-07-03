@@ -9,8 +9,8 @@ print('GPU Lock Acquired')
 from src.actrec import train
 
 def main(job_id, params):
-    print 'Anything printed here will end up in the output directory for job #%d' % job_id
-    print params
+    print('Anything printed here will end up in the output directory for job #%d' % job_id)
+    print(params)
 
     trainerr, validerr, testerr = train(dim_out=params['dim_out'][0],
                                         ctx_dim=params['ctx_dim'][0],
