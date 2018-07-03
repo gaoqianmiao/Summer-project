@@ -188,7 +188,7 @@ if __name__ == "__main__":
         try:
             id = int(sys.argv[2])
         except:
-            print 'Usage: %s --free <id>' % me
+            print('Usage: %s --free <id>' % me)
             sys.exit(1)
         if free_lock(id):
             print("Lock freed")
