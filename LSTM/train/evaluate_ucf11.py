@@ -2,9 +2,9 @@ import numpy
 import sys
 import argparse
 
-from dataprovider import gpu_util
+#from dataprovider import gpu_util
 #board = dataprovider.gpu_util.LockGPU()
-print('GPU Lock Acquired')
+#print('GPU Lock Acquired')
 
 from model.actrec import train
 
@@ -85,6 +85,6 @@ if __name__ == '__main__':
         options.update(eval("{%s}"%sys.argv[1]))
 
     main(0, options)
-    dataprovider.gpu_util.FreeGPU(board)
-    print('GPU freed')
+    #dataprovider.gpu_util.FreeGPU(board)
+    #print('GPU freed')
 
