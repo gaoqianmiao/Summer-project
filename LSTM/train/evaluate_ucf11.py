@@ -2,9 +2,9 @@ import numpy
 import sys
 import argparse
 
-import util.gpu_util
-board = util.gpu_util.LockGPU()
-print 'GPU Lock Acquired'
+import dataprovider.gpu_util
+#board = util.gpu_util.LockGPU()
+print('GPU Lock Acquired')
 
 from src.actrec import train
 
@@ -86,5 +86,5 @@ if __name__ == '__main__':
 
     main(0, options)
     util.gpu_util.FreeGPU(board)
-    print 'GPU freed'
+    print('GPU freed')
 
