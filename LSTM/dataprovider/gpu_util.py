@@ -10,7 +10,7 @@ def LockGPU(max_retries=10):
       break
     time.sleep(1)
   if board == -1:
-    print 'No GPU board available.'
+    print('No GPU board available.')
     sys.exit(1)
   else:
     import theano.sandbox.cuda
