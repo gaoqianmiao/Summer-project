@@ -2,8 +2,8 @@ import numpy
 import sys
 import argparse
 
-import dataprovider.gpu_util
-board = dataprovider.gpu_util.LockGPU()
+from dataprovider import gpu_util
+#board = dataprovider.gpu_util.LockGPU()
 print('GPU Lock Acquired')
 
 from model.actrec import train
