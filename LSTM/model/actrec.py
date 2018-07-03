@@ -446,7 +446,7 @@ def pred_acc(modelname, batch_size, f_preds, maxlen, data_test_pb, dh_test, test
             mask[:,n_ex:] = numpy.ones((maxlen, batch_size-n_ex)).astype('float32')
 
         if verbose:
-            print '%d/%d examples computed'%(n_done,n_examples)
+            print('%d/%d examples computed'%(n_done,n_examples))
 
     if test==True:
         fileprefix = 'test_results_last{}_'.format(last_n)
@@ -484,7 +484,7 @@ def pred_acc(modelname, batch_size, f_preds, maxlen, data_test_pb, dh_test, test
             s = stats.mode(s)[0][0]
             pred[i] = int(s)
         except IndexError:
-            print 'One blank index skipped'
+            print('One blank index skipped')
             pred[i] = -1
 
     f = open(data_test_pb.labels_file,'r')
@@ -509,7 +509,6 @@ def adam(lr, tparams, grads, inp, cost):
     """
     gshared = [theano.shared(p.get_value() * numpy.float32(0.), name='%s_grad'%k) for k, p in tparams.iteritems()]
     gsup = [(gs, g) for gs, g in zip(gshared, grads)]
-    #print '\n\ncheck\n\n'
     f_grad_shared = theano.function(inp, cost, updates=gsup, allow_input_downcast=True)
 
     # Magic numbers
@@ -633,12 +632,12 @@ def train(dim_out=100, # hidden layer dim for outputs
 
     # reload options
     if reload_ and os.path.exists(saveto):
-        print "Reloading options"
+        print("Reloading options")
         with open('%s.pkl'%saveto, 'rb') as f:
             model_options = pkl.load(f)
 
-    print '-----'
-    print 'Booting up all data handlers' 
+    print('-----')
+    print('Booting up all data handlers')
     data_pb = TrainProto(batch_size,maxlen,training_stride,dataset,fps)
     dh = DataHandler(data_pb)
     dataset_size = dh.GetDatasetSize()
@@ -669,14 +668,13 @@ def train(dim_out=100, # hidden layer dim for outputs
     num_test_test_batches = test_test_dataset_size / valid_batch_size
     if test_test_dataset_size % valid_batch_size != 0:
         num_test_test_batches += 1
-    print 'Data handlers ready'
-    print '-----'
+    print('-----')
 
     print 'Building model'
     params = init_params(model_options)
     # reload parameters
     if reload_ and os.path.exists(saveto):
-        print "Reloading model"
+        print("Reloading model")
         params = load_params(saveto, params)
 
     tparams = init_tparams(params)
@@ -710,7 +708,7 @@ def train(dim_out=100, # hidden layer dim for outputs
     lr = tensor.scalar(name='lr')
     f_grad_shared, f_update = eval(optimizer)(lr, tparams, grads, inps, cost)
 
-    print 'Optimization'
+    print('Optimization')
 
     history_errs = []
     # reload history
@@ -724,7 +722,7 @@ def train(dim_out=100, # hidden layer dim for outputs
     for epochidx in xrange(max_epochs):
         # If the input sequences are of variable length get mask from the data loader instead of setting them all to one
         mask = numpy.ones((maxlen, batch_size)).astype('float32')
-        print 'Epoch ', epochidx
+        print('Epoch ', epochidx)
         n_examples_seen = 0
         estop = False
         if epochidx > 0:
@@ -742,7 +740,7 @@ def train(dim_out=100, # hidden layer dim for outputs
             pd_duration = time.time() - pd_start
 
             if x == None:
-                print 'Minibatch with zero sample under length ', maxlen
+                print('Minibatch with zero sample under length ', maxlen)
                 continue
             ud_start = time.time()
 
@@ -754,17 +752,17 @@ def train(dim_out=100, # hidden layer dim for outputs
                 mask[:,n_ex:] = numpy.ones((maxlen, batch_size-n_ex)).astype('float32')
 
             if numpy.isnan(cost):
-                print 'NaN detected in cost'
+                print('NaN detected in cost')
                 return 1., 1., 1.
             if numpy.isinf(cost):
-                print 'INF detected in cost'
+                print('INF detected in cost')
                 return 1., 1., 1.
 
             if numpy.mod(uidx, dispFreq) == 0:
-                print 'Epoch ', epochidx, 'Update ', uidx, 'Cost ', cost, 'PD ', pd_duration, 'UD ', ud_duration
+                print('Epoch ', epochidx, 'Update ', uidx, 'Cost ', cost, 'PD ', pd_duration, 'UD ', ud_duration)
 
             if numpy.mod(uidx, saveFreq) == 0:
-                print 'Saving...',
+                print('Saving...',)
 
                 if best_p != None:
                     params = copy.copy(best_p)
@@ -772,14 +770,14 @@ def train(dim_out=100, # hidden layer dim for outputs
                     params = unzip(tparams)
                 numpy.savez(saveto, history_errs=history_errs, **params)
                 pkl.dump(model_options, open('%s.pkl'%saveto, 'wb'))
-                print 'Done'
+                print('Done')
 
             if numpy.mod(uidx, validFreq) == 0:
                 use_noise.set_value(0.)
                 train_err = 0
                 valid_err = 0
                 test_err = 0
-                print 'Computing predictions (This will take a while. Set the verbose flag if you want to see the progress)'
+                print('Computing predictions (This will take a while. Set the verbose flag if you want to see the progress)')
                 train_err = pred_acc(saveto, valid_batch_size, f_preds, maxlen, data_test_train_pb, dh_test_train, test_train_dataset_size, num_test_train_batches, last_n, test=False)
                 if valid is not None:
                     valid_err = pred_acc(saveto, valid_batch_size, f_preds, maxlen, data_test_valid_pb, dh_test_valid, test_valid_dataset_size, num_test_valid_batches, last_n, test=True)
@@ -791,16 +789,16 @@ def train(dim_out=100, # hidden layer dim for outputs
                 if uidx == 0 or valid_err >= numpy.array(history_errs)[:,0].max():
                     best_p = unzip(tparams) # p for min valid err / max valid acc
 
-                print 'Accuracy: Train', train_err, 'Valid', valid_err, 'Test', test_err
+                print('Accuracy: Train', train_err, 'Valid', valid_err, 'Test', test_err)
         if n_ex == batch_size:
-            print 'Seen %d training examples'% (n_examples_seen)
+            print('Seen %d training examples'% (n_examples_seen))
         else:
-            print 'Seen %d training examples'% (n_examples_seen-batch_size+n_ex)
+            print('Seen %d training examples'% (n_examples_seen-batch_size+n_ex))
         use_noise.set_value(0.)
         train_err = 0
         valid_err = 0
         test_err = 0
-        print 'Computing predictions (This will take a while. Set the verbose flag if you want to see the progress)'    
+        print('Computing predictions (This will take a while. Set the verbose flag if you want to see the progress)')    
         train_err = pred_acc(saveto, valid_batch_size, f_preds, maxlen, data_test_train_pb, dh_test_train, test_train_dataset_size, num_test_train_batches, last_n, test=False)
         if valid is not None:
             valid_err = pred_acc(saveto, valid_batch_size, f_preds, maxlen, data_test_valid_pb, dh_test_valid, test_valid_dataset_size, num_test_valid_batches, last_n, test=True)
@@ -812,7 +810,7 @@ def train(dim_out=100, # hidden layer dim for outputs
         if epochidx == 0 or valid_err >= numpy.array(history_errs)[:,0].max():
             best_p = unzip(tparams) # p for min valid err / max valid acc
 
-        print 'Accuracy: Train', train_err, 'Valid', valid_err, 'Test', test_err
+        print('Accuracy: Train', train_err, 'Valid', valid_err, 'Test', test_err)
 
     if best_p is not None:
         zipp(best_p, tparams)
@@ -821,14 +819,14 @@ def train(dim_out=100, # hidden layer dim for outputs
     train_err = 0
     valid_err = 0
     test_err = 0
-    print 'Computing predictions (This will take a while. Set the verbose flag if you want to see the progress)'
+    print('Computing predictions (This will take a while. Set the verbose flag if you want to see the progress)')
     train_err = pred_acc(saveto, valid_batch_size, f_preds, maxlen, data_test_train_pb, dh_test_train, test_train_dataset_size, num_test_train_batches, last_n, test=False)
     if valid is not None:
         valid_err = pred_acc(saveto, valid_batch_size, f_preds, maxlen, data_test_valid_pb, dh_test_valid, test_valid_dataset_size, num_test_valid_batches, last_n, test=True)
     if test is not None:
         test_err = pred_acc(saveto, valid_batch_size, f_preds, maxlen, data_test_test_pb, dh_test_test, test_test_dataset_size, num_test_test_batches, last_n, test=True)
 
-    print 'Accuracy: Train', train_err, 'Valid', valid_err, 'Test', test_err
+    print('Accuracy: Train', train_err, 'Valid', valid_err, 'Test', test_err)
     params = copy.copy(best_p)
     numpy.savez(saveto, zipped_params=best_p, train_err=train_err,
                 valid_err=valid_err, test_err=test_err, history_errs=history_errs,
