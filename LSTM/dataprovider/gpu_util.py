@@ -1,4 +1,4 @@
-import gpu_lock
+import dataprovider.gpu_lock
 import time
 import sys
 
