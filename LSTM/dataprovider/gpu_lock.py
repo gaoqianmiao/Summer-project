@@ -165,23 +165,23 @@ if __name__ == "__main__":
                 pid = int(sys.argv[2])
                 assert(os.path.exists('/proc/%d' % pid))
             except:
-                print 'Usage: %s --id [pid_to_wait_on]' % me
-                print 'The optional process id must exist if specified.'
-                print 'Otherwise the id of the parent process is used.'
+                print('Usage: %s --id [pid_to_wait_on]' % me)
+                print('The optional process id must exist if specified.')
+                print('Otherwise the id of the parent process is used.')
                 sys.exit(1)
         else:
             pid = os.getppid()
-        print obtain_lock_id(pid)
+        print(obtain_lock_id(pid))
     elif '--ids' in sys.argv:
         try:
             id = int(sys.argv[2])            
         except:
-            print 'Usage: %s --ids [specific gpu id]' % me
+            print('Usage: %s --ids [specific gpu id]' % me)
             sys.exit(1)       
         if _obtain_lock(id):
-            print id
+            print(id)
         else:
-            print - 1
+            print(- 1)
     elif '--id-to-hog' in sys.argv:
         print obtain_lock_id_to_hog()
     elif '--free' in sys.argv:
@@ -191,39 +191,39 @@ if __name__ == "__main__":
             print 'Usage: %s --free <id>' % me
             sys.exit(1)
         if free_lock(id):
-            print "Lock freed"
+            print("Lock freed")
         else:
             owner = owner_of_lock(id)
             if owner:
-                print "Failed to free lock id=%d owned by %s" % (id, owner)        
+                print("Failed to free lock id=%d owned by %s" % (id, owner))       
             else:
-                print "Failed to free lock, but it wasn't actually set?"
+                print("Failed to free lock, but it wasn't actually set?")
     elif '--noverbose' in sys.argv:
         stats = nvidia_gpu_stats()        
         print div
-        print "%s board users:" % 'abc'
+        print("%s board users:" % 'abc')
         print div       
         for id in board_ids():         
-            print "      Board %d {Use:%s; Mem:%s; Temp:%s}: %s" % (id, stats[0][id], stats[1][id], stats[2][id], owner_of_lock(id))
-        print div + '\n'
+            print("      Board %d {Use:%s; Mem:%s; Temp:%s}: %s" % (id, stats[0][id], stats[1][id], stats[2][id], owner_of_lock(id)))
+        print(div + '\n')
     else:
         stats = nvidia_gpu_stats()
-        print div      
-        print '  Usage instructions:\n'        
-        print '  To obtain and lock an id: %s --id' % me
-        print '  The lock is automatically freed when the parent terminates'
-        print
-        print "  To get an id that won't be freed: %s --id-to-hog <id>" % me
-        print "  To get a specific id: %s --ids <id>" % me        
-        print                                                   
-        print "  You *must* manually free these ids: %s --free <id>\n" % me
-        print '  More info: http://www.cs.toronto.edu/~murray/code/gpu_monitoring/'
-        print '  Report any problems to: tang@cs.toronto.edu'    
-        print '\n' + div
-        print "  NVIDIA board users:"
-        print div
+        print(div)     
+        print('  Usage instructions:\n')      
+        print('  To obtain and lock an id: %s --id' % me)
+        print('  The lock is automatically freed when the parent terminates')
+        print()
+        print("  To get an id that won't be freed: %s --id-to-hog <id>" % me)
+        print("  To get a specific id: %s --ids <id>" % me)        
+        print()                                                   
+        print("  You *must* manually free these ids: %s --free <id>\n" % me)
+        print('  More info: http://www.cs.toronto.edu/~murray/code/gpu_monitoring/')
+        print('  Report any problems to: tang@cs.toronto.edu'    
+        print('\n' + div)
+        print("  NVIDIA board users:")
+        print(div)
         for id in board_ids():         
-            print "  Board %d {Use:%s; Mem(used+free=total): %s; Fan:%s; Temp:%s}: %s" % (id, stats[0][id], stats[1][id], stats[2][id], stats[3][id], owner_of_lock(id))
-        print div + '\n'
+            print("  Board %d {Use:%s; Mem(used+free=total): %s; Fan:%s; Temp:%s}: %s" % (id, stats[0][id], stats[1][id], stats[2][id], stats[3][id], owner_of_lock(id)))
+        print(div + '\n')
 
 
