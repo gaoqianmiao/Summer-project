@@ -205,7 +205,8 @@ if __name__ == "__main__":
         print(div)      
         for id in board_ids():         
             print("      Board %d {Use:%s; Mem:%s; Temp:%s}: %s" % (id, stats[0][id], stats[1][id], stats[2][id], owner_of_lock(id)))
-        print(div + '\n')
+        print(div)
+        print()
     else:
         stats = nvidia_gpu_stats()
         print(div)     
@@ -219,11 +220,14 @@ if __name__ == "__main__":
         print("  You *must* manually free these ids: %s --free <id>\n" % me)
         print('  More info: http://www.cs.toronto.edu/~murray/code/gpu_monitoring/')
         print('  Report any problems to: tang@cs.toronto.edu'    
+        print()
         print(div)
         print("  NVIDIA board users:")
         print(div)
+        print()
         for id in board_ids():         
             print("  Board %d {Use:%s; Mem(used+free=total): %s; Fan:%s; Temp:%s}: %s" % (id, stats[0][id], stats[1][id], stats[2][id], stats[3][id], owner_of_lock(id)))
         print(div)
+        
 
 
