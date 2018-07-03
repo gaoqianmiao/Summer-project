@@ -193,3 +193,9 @@ json_string = model.to_json()
 with open('sports1M_model.json', 'w') as f:
 
     f.write(json_string)
+    
+from keras.models import model_from_json
+
+model = model_from_json(open('sports1M_model.json', 'r').read())
+model.load_weights('sports1M_weights.h5')
+model.compile(loss='mean_squared_error', optimizer='sgd')
