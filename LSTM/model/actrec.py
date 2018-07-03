@@ -832,7 +832,7 @@ def train(dim_out=100, # hidden layer dim for outputs
                 valid_err=valid_err, test_err=test_err, history_errs=history_errs,
                 **params)
 
-    print model_options
+    print(model_options)
 
     return train_err, valid_err, test_err
 
