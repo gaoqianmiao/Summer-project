@@ -1,4 +1,4 @@
-import dataprovider.gpu_lock
+from dataprovider import gpu_lock
 import time
 import sys
 
@@ -19,5 +19,5 @@ def LockGPU(max_retries=10):
 
 def FreeGPU(board):
   """ Frees the board. """
-  dataprovider.gpu_lock.free_lock(board)
+  gpu_lock.free_lock(board)
 
