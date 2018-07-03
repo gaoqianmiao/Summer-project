@@ -321,7 +321,7 @@ def main():
     #print n_ex
     #exit()
   end        = time.time()
-  print 'Duration', end-start
+  print('Duration', end-start)
   x,y,n_ex = dh.GetBatch(data_pb)
   exit()
 
