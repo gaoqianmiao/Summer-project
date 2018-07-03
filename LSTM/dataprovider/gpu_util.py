@@ -19,5 +19,5 @@ def LockGPU(max_retries=10):
 
 def FreeGPU(board):
   """ Frees the board. """
-  gpu_lock.free_lock(board)
+  dataprovider.gpu_lock.free_lock(board)
 
