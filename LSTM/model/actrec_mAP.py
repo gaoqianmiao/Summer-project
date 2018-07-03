@@ -5,7 +5,7 @@ import theano.tensor as tensor
 theano.config.floatX = 'float32'
 from theano.sandbox.rng_mrg import MRG_RandomStreams as RandomStreams
 
-import cPickle as pkl
+import _pickle as pkl
 import numpy
 import copy
 import os
