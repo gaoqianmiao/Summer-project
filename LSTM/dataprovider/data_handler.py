@@ -53,7 +53,7 @@ class DataHandler(object):
         lengths_.append(self.num_frames_[v])
       start += f
     self.dataset_size_ = len(frame_indices)
-    print 'Dataset size', self.dataset_size_
+    print('Dataset size', self.dataset_size_)
 
     self.frame_indices_ = np.array(frame_indices)	# indices of sequence beginnings
     self.labels_ = np.array(labels_)
