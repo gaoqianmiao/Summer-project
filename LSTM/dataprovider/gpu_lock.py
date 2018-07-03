@@ -219,7 +219,7 @@ if __name__ == "__main__":
         print()                                                   
         print("  You *must* manually free these ids: %s --free <id>\n" % me)
         print('  More info: http://www.cs.toronto.edu/~murray/code/gpu_monitoring/')
-        print('  Report any problems to: tang@cs.toronto.edu'    
+        print('  Report any problems to: tang@cs.toronto.edu')  
         print()
         print(div)
         print("  NVIDIA board users:")
