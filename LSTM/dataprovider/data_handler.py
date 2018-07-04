@@ -210,10 +210,10 @@ class TrainProto(object):
     self.dataset = dataset
     self.fps = fps
     if dataset=='ucf11':
-      self.data_file       = '/ais/gobi3/u/shikhar/ucf11/dataset/train_features.h5'
-      self.num_frames_file = '/ais/gobi3/u/shikhar/ucf11/dataset/train_framenum.txt'
-      self.labels_file     = '/ais/gobi3/u/shikhar/ucf11/dataset/train_labels.txt'
-      self.vid_name_file   = '/ais/gobi3/u/shikhar/ucf11/dataset/train_filename.txt'
+      self.data_file       = 'ucf11dataset/train_features.h5'
+      self.num_frames_file = 'ucf11dataset/train_framenum.txt'
+      self.labels_file     = 'ucf11dataset/train_labels.txt'
+      self.vid_name_file   = 'ucf11dataset/train_filename.txt'
       self.dataset_name    = 'features'
     elif dataset=='h2mAP':
       self.data_file       = '/ais/gobi3/u/shikhar/hollywood2/mAPdataset/train_features.h5'
