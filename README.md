@@ -4,7 +4,7 @@ sports-1m-dataset/ProjectHome.md
 
 Instruction:
 1. pip install keras==1.2.2
-2. pip insatll tensorflow
+2. pip install tensorflow
 3. git clone https://github.com/gaoqianmiao/Summer-project.git
 3. cd Summer-project
 4. BACKEND==tensorflow python3 C3DattLSTM_model 
