@@ -8,7 +8,7 @@ def main():
     K.set_image_dim_ordering('tf')
     sys.path.append(os.path.join(os.path.dirname(__file__), '..'))
 
-    from keras_video_classifier.library.utility.plot_utils import plot_and_save_history
+    #from keras_video_classifier.library.utility.plot_utils import plot_and_save_history
     from keras_video_classifier.library.recurrent_networks import VGG16LSTMVideoClassifier
     from keras_video_classifier.library.utility.ucf.UCF101_loader import load_ucf
 
@@ -26,7 +26,7 @@ def main():
 
     history = classifier.fit(data_dir_path=input_dir_path, model_dir_path=output_dir_path, data_set_name=data_set_name)
 
-    plot_and_save_history(history, VGG16LSTMVideoClassifier.model_name,
+    #plot_and_save_history(history, VGG16LSTMVideoClassifier.model_name,
                           report_dir_path + '/' + VGG16LSTMVideoClassifier.model_name + '-history.png')
 
 
