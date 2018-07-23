@@ -1,12 +1,12 @@
 import numpy as np
 from keras import Sequential
 from keras.callbacks import ModelCheckpoint
-from keras.layers import Conv2D, Activation, MaxPooling2D, Dropout, Flatten, Dense
+from keras.layers import Conv3D, Activation, MaxPooling3D, Dropout, Flatten, Dense
 from keras.utils import np_utils
 from sklearn.model_selection import train_test_split
 from keras.utils.vis_utils import plot_model
 
-from keras_video_classifier.library.utility.frame_extractors.frame_extractor import scan_and_extract_videos_for_conv2d, \
+from utility.frame_extractors.frame_extractor import scan_and_extract_videos_for_conv2d, \
     extract_videos_for_conv2d
 
 BATCH_SIZE = 32
@@ -38,35 +38,44 @@ class CnnVideoClassifier(object):
         self.config = None
 
     def create_model(self, input_shape, nb_classes):
+        #layer 1:
         model = Sequential()
-        model.add(Conv2D(filters=32, input_shape=input_shape, padding='same', kernel_size=(3, 3)))
+        model.add(Conv3D(filters=64, input_shape=input_shape, padding='same', kernel_size=(3, 3, 3)))
+
         model.add(Activation('relu'))
-        model.add(MaxPooling2D(pool_size=(2, 2)))
+        model.add(MaxPooling3D(pool_size=(1, 2, 2)))
+        model.add(Dropout(rate=0.5))
 
-        model.add(Conv2D(filters=32, padding='same', kernel_size=(3, 3)))
+        #layer 2
+        model.add(Conv3D(filters=128, input_shape=input_shape, padding='same', kernel_size=(3, 3, 3)))
         model.add(Activation('relu'))
-        model.add(MaxPooling2D(pool_size=(2, 2)))
-
-        model.add(Dropout(rate=0.25))
-
-        model.add(Conv2D(filters=64, kernel_size=(3, 3), padding='same'))
+        model.add(MaxPooling3D(pool_size=(2, 2, 2)))
+        model.add(Dropout(rate=0.5))
+        
+        #layer 3
+        model.add(Conv3D(filters=256, input_shape=input_shape, padding='same', kernel_size=(3, 3, 3)))
+        model.add(Conv3D(filters=256, input_shape=input_shape, padding='same', kernel_size=(3, 3, 3)))
         model.add(Activation('relu'))
-        model.add(MaxPooling2D(pool_size=(2, 2)))
+        model.add(MaxPooling3D(pool_size=(2, 2, 2)))
+        model.add(Dropout(rate=0.5))
 
-        model.add(Conv2D(filters=64, padding='same', kernel_size=(3, 3)))
+        #layer 4
+        model.add(Conv3D(filters=512, input_shape=input_shape, padding='same', kernel_size=(3, 3, 3)))
+        model.add(Conv3D(filters=512, input_shape=input_shape, padding='same', kernel_size=(3, 3, 3)))
         model.add(Activation('relu'))
-        model.add(MaxPooling2D(pool_size=(2, 2)))
-
-        model.add(Dropout(rate=0.25))
+        model.add(MaxPooling3D(pool_size=(2, 2, 2)))
+        model.add(Dropout(rate=0.5))
+        
+        #layer 5:
+        model.add(Conv3D(filters=512, input_shape=input_shape, padding='same', kernel_size=(3, 3, 3)))
+        model.add(Conv3D(filters=512, input_shape=input_shape, padding='same', kernel_size=(3, 3, 3)))
+        model.add(Activation('relu'))
+        model.add(MaxPooling3D(pool_size=(2, 1, 1)))
+        model.add(Dropout(rate=0.5))
 
         model.add(Flatten())
-        model.add(Dense(units=512))
-        model.add(Activation('relu'))
-        model.add(Dropout(rate=0.5))
-        model.add(Dense(units=nb_classes))
-        model.add(Activation('softmax'))
 
-        model.compile(optimizer='rmsprop', loss='categorical_crossentropy', metrics=['accuracy'])
+        model.compile(optimizer='adam', loss='categorical_crossentropy', metrics=['accuracy'])
 
         return model
 
