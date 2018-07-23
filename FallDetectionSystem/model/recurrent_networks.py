@@ -412,7 +412,7 @@ class VGG16LSTMVideoClassifier(object):
     def create_model(self):
         lstm_model = Sequential()
 
-        lstm_model.add(Bidirectional(LSTM(300)))
+        lstm_model.add(LSTM(units=HIDDEN_UNITS, input_shape=(None, self.num_input_tokens), return_sequences=False, dropout=0.5))
         lstm_model.add(Dropout(0.3))
         lstm_model.add(Dense(1,activation='sigmoid'))
 
