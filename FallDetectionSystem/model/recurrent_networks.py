@@ -417,6 +417,7 @@ class VGG16LSTMVideoClassifier(object):
         model.add(Activation('softmax'))
 
         model.compile(loss='categorical_crossentropy', optimizer='adam', metrics=['accuracy'])
+        model.summary
         return model
 
     def load_model(self, config_file_path, weight_file_path):
