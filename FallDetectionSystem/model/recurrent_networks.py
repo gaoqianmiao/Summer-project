@@ -179,7 +179,7 @@ from keras.callbacks import ModelCheckpoint
 import os
 import numpy as np
 
-from utility.frame_extractors.vgg16_feature_extractor import extract_vgg16_features_live, \
+from utility.frame_extractor.vgg16_feature_extractor import extract_vgg16_features_live, \
     scan_and_extract_vgg16_features
 
 BATCH_SIZE = 64
