@@ -76,7 +76,7 @@ class CnnVideoClassifier(object):
         model.add(Flatten())
 
         model.compile(optimizer='adam', loss='categorical_crossentropy', metrics=['accuracy'])
-
+        model.summary()
         return model
 
     @staticmethod
