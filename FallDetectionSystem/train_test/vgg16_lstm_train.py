@@ -26,8 +26,7 @@ def main():
 
     history = classifier.fit(data_dir_path=input_dir_path, model_dir_path=output_dir_path, data_set_name=data_set_name)
 
-    #plot_and_save_history(history, VGG16LSTMVideoClassifier.model_name,
-                          report_dir_path + '/' + VGG16LSTMVideoClassifier.model_name + '-history.png')
+    #plot_and_save_history(history, VGG16LSTMVideoClassifier.model_name, report_dir_path + '/' + VGG16LSTMVideoClassifier.model_name + '-history.png')
 
 
 if __name__ == '__main__':
