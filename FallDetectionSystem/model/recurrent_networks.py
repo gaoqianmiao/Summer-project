@@ -263,17 +263,17 @@ class VGG16LSTMVideoClassifier(object):
     def create_model(self):
         input1 = Input(shape=(None, self.num_input_tokens))
         #lstm_section=Sequential()
-        lstm_section=LSTM(units=HIDDEN_UNITS, return_sequences=False, dropout=0.5))(input1)
+        
         #lstm_section = Dropout(0.3)(lstm_section)
         #lstm_section = Dense(1,activation='sigmoid')(lstm_section)
         
 # compute importance for each step
-        attention=Dense(1, activation='tanh')(lstm_section)
+        attention=Dense(1, activation='tanh')(input1)
         attention=Flatten()( attention )
         attention=Activation('softmax')( attention )
         attention=RepeatVector(64)( attention )
         attention=Permute([2, 1])( attention )
-
+        lstm_section=(LSTM(units=HIDDEN_UNITS, input_shape=(None, self.num_input_tokens), return_sequences=False, dropout=0.5))(attention)
 
         model = merge([lstm_section, attention], mode='mul')
         model=Lambda(lambda xin: K.sum(xin, axis=-2),output_shape=(64))(model)
