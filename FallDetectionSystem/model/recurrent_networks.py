@@ -572,8 +572,8 @@ class VGG16LSTMVideoClassifier(object):
 
     def create_model(self):
         model = Sequential()
-        model.add(Attention(LSTM(units=HIDDEN_UNITS, return_sequences=False, dropout=0.5, input_shape=(None, 1, self.num_input_tokens), consume_less='gpu')))
-        model.add(Dense(512, activation='relu'))
+        model.add(Dense(512, activation='relu',input_shape=(None, 1, self.num_input_tokens)))
+        model.add(Attention(LSTM(units=HIDDEN_UNITS, return_sequences=False, dropout=0.5, consume_less='gpu')))
         model.add(Dropout(0.5))
         model.add(Dense(self.nb_classes))
         model.add(Activation('softmax'))
