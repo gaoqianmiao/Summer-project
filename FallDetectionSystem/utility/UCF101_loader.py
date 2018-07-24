@@ -3,8 +3,8 @@ import os
 import sys
 import patoolib
 
-URL_LINK = 'http://crcv.ucf.edu/data/UCF11_updated_mpg.rar'
-#URL_LINK = 'http://crcv.ucf.edu/data/UCF101/UCF101.rar'
+#URL_LINK = 'http://crcv.ucf.edu/data/UCF11_updated_mpg.rar'
+URL_LINK = 'http://crcv.ucf.edu/data/UCF101/UCF101.rar'
 
 
 def reporthook(block_num, block_size, total_size):
