@@ -18,7 +18,7 @@ from utility.vgg16_feature_extractor import extract_vgg16_features_live, \
     scan_and_extract_vgg16_features
 
 BATCH_SIZE = 64
-NUM_EPOCHS = 50
+NUM_EPOCHS = 100
 VERBOSE = 1
 HIDDEN_UNITS = 512
 MAX_ALLOWED_FRAMES = 20
