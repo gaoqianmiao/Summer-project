@@ -272,7 +272,7 @@ class VGG16LSTMVideoClassifier(object):
         attention=Flatten()
         attention=Activation('softmax')
         attention=RepeatVector(64)
-        attention=Permute([2, 1])
+        #attention=Permute([2, 1])
 
 
         model = Model(input=attention.input, output=lstm_model(attention.output))
