@@ -261,22 +261,22 @@ class VGG16LSTMVideoClassifier(object):
             return model_dir_path + '/' + VGG16LSTMVideoClassifier.model_name + '-hi-dim-architecture.json'
 
     def create_model(self):
-        #input1 = Input(shape=(None, self.num_input_tokens,))
-        lstm_section=Sequential()
-        lstm_section.add(LSTM(units=HIDDEN_UNITS, input_shape=(None, self.num_input_tokens), return_sequences=False, dropout=0.5))
+        input1 = Input(shape=(None, self.num_input_tokens))
+        #lstm_section=Sequential()
+        lstm_section=LSTM(units=HIDDEN_UNITS, input_shape=(None, self.num_input_tokens), return_sequences=False, dropout=0.5))(input1)
         #lstm_section = Dropout(0.3)(lstm_section)
         #lstm_section = Dense(1,activation='sigmoid')(lstm_section)
         
 # compute importance for each step
-        attention=Dense(1, activation='tanh')
+        attention=Dense(1, activation='tanh')(lstm_section)
         attention=Flatten()( attention )
         attention=Activation('softmax')( attention )
         attention=RepeatVector(64)( attention )
         attention=Permute([2, 1])( attention )
 
 
-        model = Model(input=attention.input, output=lstm_section(attention.output))
-        #model=Lambda(lambda xin: K.sum(xin, axis=-2),output_shape=(64))(sent_representation)
+        model = merge([lstm_section, attention], mode='mul')
+        model=Lambda(lambda xin: K.sum(xin, axis=-2),output_shape=(64))(model)
         
         model.add(Dense(512, activation='relu'))
         model.add(Dropout(0.5))
