@@ -261,10 +261,10 @@ class VGG16LSTMVideoClassifier(object):
             return model_dir_path + '/' + VGG16LSTMVideoClassifier.model_name + '-hi-dim-architecture.json'
 
     def create_model(self):
-        lstm_section = Sequential()
-        lstm_section.add(LSTM(units=HIDDEN_UNITS, input_shape=(None, self.num_input_tokens), return_sequences=False, dropout=0.5))
-        lstm_section.add(Dropout(0.3))
-        lstm_section.add(Dense(1,activation='sigmoid'))
+        #input1 = Input(shape=(None, self.num_input_tokens,))
+        lstm_section.add(LSTM(units=HIDDEN_UNITS, input_shape=, return_sequences=False, dropout=0.5)))
+        #lstm_section = Dropout(0.3)(lstm_section)
+        #lstm_section = Dense(1,activation='sigmoid')(lstm_section)
         
 # compute importance for each step
         attention=Dense(1, activation='tanh')
@@ -276,11 +276,12 @@ class VGG16LSTMVideoClassifier(object):
 
         model = Model(input=attention.input, output=lstm_section(attention.output))
         #model=Lambda(lambda xin: K.sum(xin, axis=-2),output_shape=(64))(sent_representation)
-        '''
+        
         model.add(Dense(512, activation='relu'))
         model.add(Dropout(0.5))
         model.add(Dense(self.nb_classes))
         model.add(Activation('softmax'))
+        '''
         rms_prop=RMSprop(lr=0.001,rho=0.9,epsilon=None,decay=0.0)
         '''
         adam = Adam(lr=0.001, beta_1=0.9, beta_2=0.999, epsilon=None, decay=0.0, amsgrad=False)
