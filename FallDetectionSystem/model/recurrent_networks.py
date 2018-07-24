@@ -261,27 +261,27 @@ class VGG16LSTMVideoClassifier(object):
             return model_dir_path + '/' + VGG16LSTMVideoClassifier.model_name + '-hi-dim-architecture.json'
 
     def create_model(self):
-        lstm_model = Sequential()
-
-        lstm_model.add(LSTM(units=HIDDEN_UNITS, input_shape=(None, self.num_input_tokens), return_sequences=False, dropout=0.5))
-        lstm_model.add(Dropout(0.3))
-        lstm_model.add(Dense(1,activation='sigmoid'))
-
+        lstm_section = LSTM(units=HIDDEN_UNITS, input_shape=(None, self.num_input_tokens), return_sequences=False, dropout=0.5))
+        lstm_section = Dropout(0.3)( lstm_section ) 
+        lstm_section = Dense(1,activation='sigmoid')( lstm_section )
+        
 # compute importance for each step
-        attention=Dense(1, activation='tanh')
-        attention=Flatten()
-        attention=Activation('softmax')
-        attention=RepeatVector(64)
-        #attention=Permute([2, 1])
+        attention=Dense(1, activation='tanh')( lstm_section )
+        attention=Flatten()( attention )
+        attention=Activation('softmax')( attention )
+        attention=RepeatVector(64)( attention )
+        attention=Permute([2, 1])( attention )
 
 
-        model = Model(input=attention.input, output=lstm_model(attention.output))
-        #model=Lambda(lambda xin: K.sum(xin, axis=-2),output_shape=(64))(sent_representation)
+        model=keras.layers.Add()([lstm_section,attention])
+        model=Lambda(lambda xin: K.sum(xin, axis=-2),output_shape=(64))(sent_representation)
+        '''
         model.add(Dense(512, activation='relu'))
         model.add(Dropout(0.5))
         model.add(Dense(self.nb_classes))
         model.add(Activation('softmax'))
         rms_prop=RMSprop(lr=0.001,rho=0.9,epsilon=None,decay=0.0)
+        '''
         adam = Adam(lr=0.001, beta_1=0.9, beta_2=0.999, epsilon=None, decay=0.0, amsgrad=False)
         model.compile(loss='binary_crossentropy',optimizer=adam,metrics=['accuracy'])
           #class_mode='binary')
