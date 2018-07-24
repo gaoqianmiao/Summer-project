@@ -1,4 +1,5 @@
 from keras.layers import LSTM
+from keras import activations
 class AttentionLSTM(LSTM):
 
     """LSTM with attention mechanism
