@@ -3,7 +3,7 @@
 from keras.layers import Dense, Activation, Dropout, Bidirectional, Flatten, RepeatVector, Permute, Lambda
 from keras.models import Model
 import keras
-from keras.engine.input_layer import Input
+from keras import Input
 from keras.layers.recurrent import LSTM
 from keras.models import Sequential
 from keras.applications.vgg16 import VGG16
