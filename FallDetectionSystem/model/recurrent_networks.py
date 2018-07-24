@@ -1,6 +1,7 @@
 
 #---------------------------------------------------------LSTM----------------------------------------------------------------
-from keras.layers import Dense, Activation, Dropout, Bidirectional, Flatten, RepeatVector, Permute, Lambda, Model
+from keras.layers import Dense, Activation, Dropout, Bidirectional, Flatten, RepeatVector, Permute, Lambda
+from keras.models import Model
 import keras
 from keras.layers.recurrent import LSTM
 from keras.models import Sequential
