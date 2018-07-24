@@ -275,10 +275,10 @@ class VGG16LSTMVideoClassifier(object):
         #attention=RepeatVector(64)( attention )
         attention=Permute([2, 1])( attention )
         lstm_section=Sequential()
-        lstm_section.add(LSTM(units=HIDDEN_UNITS, return_sequences=False, dropout=0.5))
+        lstm_section.add(LSTM(units=HIDDEN_UNITS, input_shape=(None, self.num_input_tokens), return_sequences=False, dropout=0.5))
 
         model = merge([lstm_section, attention], mode='mul')
-        model=Lambda(lambda xin: K.sum(xin, axis=-2),output_shape=(64))(model)
+        #model=Lambda(lambda xin: K.sum(xin, axis=-2),output_shape=(64))(model)
         
         model.add(Dense(512, activation='relu'))
         model.add(Dropout(0.5))
