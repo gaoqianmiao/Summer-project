@@ -41,7 +41,7 @@ class Attention(Wrapper):
         #assert isinstance(layer, Recurrent)
         
         #if layer.get_config()['consume_less']=='cpu':
-            #raise Exception("AttentionLSTMWrapper doesn't support RNN's with consume_less='cpu'")
+            raise Exception("AttentionLSTMWrapper doesn't support RNN's with consume_less='cpu'")
         
         self.supports_masking = True
         super(Attention, self).__init__(layer, **kwargs)
@@ -573,7 +573,7 @@ class VGG16LSTMVideoClassifier(object):
     def create_model(self):
         model = Sequential()
         model.add(Dense(512, activation='relu',input_shape=(None, 1, self.num_input_tokens)))
-        model.add(Attention(LSTM(units=HIDDEN_UNITS, return_sequences=False, consume_less='gpu')))
+        model.add(Attention(LSTM(units=HIDDEN_UNITS, return_sequences=False)))
         model.add(Dropout(0.5))
         model.add(Dense(self.nb_classes))
         model.add(Activation('softmax'))
