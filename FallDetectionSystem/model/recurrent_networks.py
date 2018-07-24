@@ -274,7 +274,7 @@ class VGG16LSTMVideoClassifier(object):
         attention=Activation('softmax')( attention )
         #attention=RepeatVector(64)( attention )
         attention=Permute([2, 1])( attention )
-        lstm_section=(LSTM(units=HIDDEN_UNITS, return_sequences=False, dropout=0.5))(attention)
+        lstm_section=(LSTM(units=HIDDEN_UNITS, return_sequences=True, dropout=0.5))(attention)
 
         model = merge([lstm_section, attention], mode='mul')
         model=Lambda(lambda xin: K.sum(xin, axis=-2),output_shape=(64))(model)
