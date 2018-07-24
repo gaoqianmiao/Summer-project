@@ -1,6 +1,6 @@
 
 #---------------------------------------------------------LSTM----------------------------------------------------------------
-from keras.layers import Dense, Activation, Dropout, Bidirectional, Flatten, RepeatVector, Permute, Lambda
+from keras.layers import Dense, Activation, Dropout, Bidirectional, Flatten, RepeatVector, Permute, Lambda, merge
 from keras.models import Model
 import keras
 from keras import Input
