@@ -247,7 +247,7 @@ class Attention(Layer):
             return input_shape[0], input_shape[-1]
 
 #---------------------------------------------------------LSTM----------------------------------------------------------------
-from keras.layers import Dense, Activation, Dropout, Bidirectional, Flatten, RepeatVector, Permute, Lambda, merge
+from keras.layers import Dense, Activation, Dropout, Bidirectional, Flatten, RepeatVector, Permute, Lambda, merge, TimeDistributed
 from keras.models import Model
 import keras
 from keras import Input
