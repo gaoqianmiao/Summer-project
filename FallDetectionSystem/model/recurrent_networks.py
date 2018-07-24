@@ -274,8 +274,8 @@ class VGG16LSTMVideoClassifier(object):
         attention=Permute([2, 1])
 
 
-        model=keras.layers.Add()([lstm_model,attention])
-        model=Lambda(lambda xin: K.sum(xin, axis=-2),output_shape=(64))(sent_representation)
+        model = Model(input=attention.input, output=lstm_model(attention.output))
+        #model=Lambda(lambda xin: K.sum(xin, axis=-2),output_shape=(64))(sent_representation)
         model.add(Dense(512, activation='relu'))
         model.add(Dropout(0.5))
         model.add(Dense(self.nb_classes))
