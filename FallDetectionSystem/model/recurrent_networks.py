@@ -40,8 +40,8 @@ class AttentionLSTM(Wrapper):
     def __init__(self, layer, **kwargs):
         #assert isinstance(layer, Recurrent)
         
-        if layer.get_config()['consume_less']=='cpu':
-            raise Exception("AttentionLSTMWrapper doesn't support RNN's with consume_less='cpu'")
+        #if layer.get_config()['consume_less']=='cpu':
+            #raise Exception("AttentionLSTMWrapper doesn't support RNN's with consume_less='cpu'")
         
         self.supports_masking = True
         super(Attention, self).__init__(layer, **kwargs)
