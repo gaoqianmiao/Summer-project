@@ -262,7 +262,7 @@ class VGG16LSTMVideoClassifier(object):
             return model_dir_path + '/' + VGG16LSTMVideoClassifier.model_name + '-hi-dim-architecture.json'
 
     def create_model(self):
-        input1 = Input(shape=(None, self.num_input_tokens))
+        input1 = Input(shape=(None, self.num_input_tokens,))
         #lstm_section=Sequential()
         
         #lstm_section = Dropout(0.3)(lstm_section)
@@ -270,7 +270,7 @@ class VGG16LSTMVideoClassifier(object):
         
 # compute importance for each step
         attention=Dense(1, activation='tanh')(input1)
-        attention=Flatten()( attention )
+        #attention=Flatten()( attention )
         attention=Activation('softmax')( attention )
         attention=RepeatVector(64)( attention )
         attention=Permute([2, 1])( attention )
