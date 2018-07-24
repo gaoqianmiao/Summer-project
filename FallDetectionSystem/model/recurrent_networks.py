@@ -1,3 +1,4 @@
+from keras.layers import LSTM
 class AttentionLSTM(LSTM):
 
     """LSTM with attention mechanism
