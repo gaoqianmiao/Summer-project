@@ -309,7 +309,7 @@ class SimplifiedAttention(Wrapper):
 
 
 #---------------------------------------------------------LSTM----------------------------------------------------------------
-from keras.layers import Dense, Activation, Dropout, Bidirectional, Flatten, RepeatVector, Permute, Lambda, merge, TimeDistributed
+from keras.layers import Dense, Activation, Dropout, Bidirectional, Flatten, RepeatVector, Permute, Lambda, merge, TimeDistributed, recurrent
 from keras.models import Model
 import keras
 from keras import Input
@@ -572,7 +572,7 @@ class VGG16LSTMVideoClassifier(object):
 
     def create_model(self):
         model = Sequential()
-        model.add(AttentionLSTM(LSTM(units=HIDDEN_UNITS, return_sequences=False, dropout=0.5, input_shape=(None, 1, self.num_input_tokens), consume_less='gpu')))
+        model.add(AttentionLSTM(recurrent.LSTM(units=HIDDEN_UNITS, return_sequences=False, dropout=0.5, input_shape=(None, 1, self.num_input_tokens), consume_less='gpu')))
         model.add(Dense(512, activation='relu'))
         model.add(Dropout(0.5))
         model.add(Dense(self.nb_classes))
