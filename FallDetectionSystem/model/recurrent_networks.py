@@ -295,7 +295,7 @@ class Attention(Wrapper):
 
 
 #---------------------------------------------------------LSTM----------------------------------------------------------------
-from keras.layers import Dense, Activation, Dropout, Bidirectional, Flatten, RepeatVector, Permute, Lambda, merge, TimeDistributed, recurrent
+from keras.layers import Dense, Activation, Dropout, Bidirectional, Flatten, RepeatVector, Permute, Lambda, merge, TimeDistributed, recurrent, InputLayer
 from keras.models import Model
 import keras
 from keras.layers.recurrent import LSTM
@@ -558,7 +558,7 @@ class VGG16LSTMVideoClassifier(object):
     def create_model(self):
         model = Sequential()
         model.add(InputLayer(input_shape=(None, 1, self.num_input_tokens)))
-        model.add(Attention(LSTM(units=HIDDEN_UNITS, return_sequences=False, consume_less='mem')))
+        model.add(Attention(recurrent.LSTM(units=HIDDEN_UNITS, return_sequences=False, consume_less='mem')))
         model.add(Dense(512, activation='relu'))
         model.add(Dense(self.nb_classes))
         model.add(Activation('softmax'))
