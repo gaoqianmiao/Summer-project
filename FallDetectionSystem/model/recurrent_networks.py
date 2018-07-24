@@ -1,250 +1,310 @@
-from keras import backend as K, initializers, regularizers, constraints
+"""
+A keras attention layer that wraps RNN layers.
 
-from keras.engine.topology import Layer
+Based on tensorflows [attention_decoder](https://github.com/tensorflow/tensorflow/blob/c8a45a8e236776bed1d14fd71f3b6755bd63cc58/tensorflow/python/ops/seq2seq.py#L506)
+and [Grammar as a Foreign Language](https://arxiv.org/abs/1412.7449).
 
+date: 20161101
+author: wassname
+url:
+"""
+from __future__ import absolute_import
 
+from keras import backend as K
+from keras.engine import InputSpec
+from keras.layers import LSTM, activations, Wrapper, Recurrent
 
+class AttentionLSTM(Wrapper):
+    """
+    This wrapper will provide an attention layer to a recurrent layer.
 
+    # Arguments:
+        layer: `Recurrent` instance with consume_less='gpu' or 'mem'
 
-def dot_product(x, kernel):
+    # Examples:
+
+    ```python
+    model = Sequential()
+    model.add(LSTM(10, return_sequences=True), batch_input_shape=(4, 5, 10))
+    model.add(TFAttentionRNNWrapper(LSTM(10, return_sequences=True, consume_less='gpu')))
+    model.add(Dense(5))
+    model.add(Activation('softmax'))
+    model.compile(loss='categorical_crossentropy', optimizer='rmsprop')
+    ```
+
+    # References
+    - [Grammar as a Foreign Language](https://arxiv.org/abs/1412.7449)
+
 
     """
-
-    Wrapper for dot product operation, in order to be compatible with both
-
-    Theano and Tensorflow
-
-    Args:
-
-        x (): input
-
-        kernel (): weights
-
-    Returns:
-
-    """
-
-    if K.backend() == 'tensorflow':
-
-        # todo: check that this is correct
-
-        return K.squeeze(K.dot(x, K.expand_dims(kernel)), axis=-1)
-
-    else:
-
-        return K.dot(x, kernel)
-
-
-
-
-
-class Attention(Layer):
-
-    def __init__(self,
-
-                 W_regularizer=None, b_regularizer=None,
-
-                 W_constraint=None, b_constraint=None,
-
-                 bias=True,
-
-                 return_attention=False,
-
-                 **kwargs):
-
-        """
-
-        Keras Layer that implements an Attention mechanism for temporal data.
-
-        Supports Masking.
-
-        Follows the work of Raffel et al. [https://arxiv.org/abs/1512.08756]
-
-        # Input shape
-
-            3D tensor with shape: `(samples, steps, features)`.
-
-        # Output shape
-
-            2D tensor with shape: `(samples, features)`.
-
-        :param kwargs:
-
-        Just put it on top of an RNN Layer (GRU/LSTM/SimpleRNN) with return_sequences=True.
-
-        The dimensions are inferred based on the output shape of the RNN.
-
-
-
-
-
-        Note: The layer has been tested with Keras 1.x
-
-
-
-        Example:
-
-        
-
-            # 1
-
-            model.add(LSTM(64, return_sequences=True))
-
-            model.add(Attention())
-
-            # next add a Dense layer (for classification/regression) or whatever...
-
-
-
-            # 2 - Get the attention scores
-
-            hidden = LSTM(64, return_sequences=True)(words)
-
-            sentence, word_scores = Attention(return_attention=True)(hidden)
-
-
-
-        """
-
+    def __init__(self, layer, **kwargs):
+        assert isinstance(layer, Recurrent)
+        if layer.get_config()['consume_less']=='cpu':
+            raise Exception("AttentionLSTMWrapper doesn't support RNN's with consume_less='cpu'")
         self.supports_masking = True
-
-        self.return_attention = return_attention
-
-        self.init = initializers.get('glorot_uniform')
-
-
-
-        self.W_regularizer = regularizers.get(W_regularizer)
-
-        self.b_regularizer = regularizers.get(b_regularizer)
-
-
-
-        self.W_constraint = constraints.get(W_constraint)
-
-        self.b_constraint = constraints.get(b_constraint)
-
-
-
-        self.bias = bias
-
-        super(Attention, self).__init__(**kwargs)
-
-
+        super(Attention, self).__init__(layer, **kwargs)
 
     def build(self, input_shape):
+        assert len(input_shape) >= 3
+        self.input_spec = [InputSpec(shape=input_shape)]
+        nb_samples, nb_time, input_dim = input_shape
 
-        assert len(input_shape) == 3
+        if not self.layer.built:
+            self.layer.build(input_shape)
+            self.layer.built = True
 
+        super(Attention, self).build()
 
+        self.W1 = self.layer.init((input_dim, input_dim, 1, 1), name='{}_W1'.format(self.name))
+        self.W2 = self.layer.init((self.layer.output_dim, input_dim), name='{}_W2'.format(self.name))
+        self.b2 = K.zeros((input_dim,), name='{}_b2'.format(self.name))
+        self.W3 = self.layer.init((input_dim*2, input_dim), name='{}_W3'.format(self.name))
+        self.b3 = K.zeros((input_dim,), name='{}_b3'.format(self.name))
+        self.V = self.layer.init((input_dim,), name='{}_V'.format(self.name))
 
-        self.W = self.add_weight((input_shape[-1],),
+        self.trainable_weights = [self.W1, self.W2, self.W3, self.V, self.b2, self.b3]
 
-                                 initializer=self.init,
+    def get_output_shape_for(self, input_shape):
+        return self.layer.get_output_shape_for(input_shape)
 
-                                 name='{}_W'.format(self.name),
+    def step(self, x, states):
+        # This is based on [tensorflows implementation](https://github.com/tensorflow/tensorflow/blob/c8a45a8e236776bed1d14fd71f3b6755bd63cc58/tensorflow/python/ops/seq2seq.py#L506).
+        # First, we calculate new attention masks:
+        #   attn = softmax(V^T * tanh(W2 * X +b2 + W1 * h))
+        # and we make the input as a concatenation of the input and weighted inputs which is then
+        # transformed back to the shape x of using W3
+        #   x = W3*(x+X*attn)+b3
+        # Then, we run the cell on a combination of the input and previous attention masks:
+        #   h, state = cell(x, h).
 
-                                 regularizer=self.W_regularizer,
+        nb_samples, nb_time, input_dim = self.input_spec[0].shape
+        h = states[0]
+        X = states[-1]
+        xW1 = states[-2]
 
-                                 constraint=self.W_constraint)
+        Xr = K.reshape(X,(-1,nb_time,1,input_dim))
+        hW2 = K.dot(h,self.W2)+self.b2
+        hW2 = K.reshape(hW2,(-1,1,1,input_dim))
+        u = K.tanh(xW1+hW2)
+        a = K.sum(self.V*u,[2,3])
+        a = K.softmax(a)
+        a = K.reshape(a,(-1, nb_time, 1, 1))
 
-        if self.bias:
+        # Weight attention vector by attention
+        Xa = K.sum(a*Xr,[1,2])
+        Xa = K.reshape(Xa,(-1,input_dim))
 
-            self.b = self.add_weight((input_shape[1],),
+        # Merge input and attention weighted inputs into one vector of the right size.
+        x = K.dot(K.concatenate([x,Xa],1),self.W3)+self.b3
 
-                                     initializer='zero',
+        h, new_states = self.layer.step(x, states)
+        return h, new_states
 
-                                     name='{}_b'.format(self.name),
+    def get_constants(self, x):
+        constants = self.layer.get_constants(x)
 
-                                     regularizer=self.b_regularizer,
+        # Calculate K.dot(x, W2) only once per sequence by making it a constant
+        nb_samples, nb_time, input_dim = self.input_spec[0].shape
+        Xr = K.reshape(x,(-1,nb_time,input_dim,1))
+        Xrt = K.permute_dimensions(Xr, (0, 2, 1, 3))
+        xW1t = K.conv2d(Xrt,self.W1,border_mode='same')
+        xW1 = K.permute_dimensions(xW1t, (0, 2, 3, 1))
+        constants.append(xW1)
 
-                                     constraint=self.b_constraint)
+        # we need to supply the full sequence of inputs to step (as the attention_vector)
+        constants.append(x)
 
-        else:
-
-            self.b = None
-
-
-
-        self.built = True
-
-
-
-    def compute_mask(self, input, input_mask=None):
-
-        # do not pass the mask to the next layers
-
-        return None
-
-
+        return constants
 
     def call(self, x, mask=None):
+        # input shape: (nb_samples, time (padded with zeros), input_dim)
+        input_shape = self.input_spec[0].shape
+        if K._BACKEND == 'tensorflow':
+            if not input_shape[1]:
+                raise Exception('When using TensorFlow, you should define '
+                                'explicitly the number of timesteps of '
+                                'your sequences.\n'
+                                'If your first layer is an Embedding, '
+                                'make sure to pass it an "input_length" '
+                                'argument. Otherwise, make sure '
+                                'the first layer has '
+                                'an "input_shape" or "batch_input_shape" '
+                                'argument, including the time axis. '
+                                'Found input shape at layer ' + self.name +
+                                ': ' + str(input_shape))
 
-        eij = dot_product(x, self.W)
-
-
-
-        if self.bias:
-
-            eij += self.b
-
-
-
-        eij = K.tanh(eij)
-
-
-
-        a = K.exp(eij)
-
-
-
-        # apply mask after the exp. will be re-normalized next
-
-        if mask is not None:
-
-            # Cast the mask to floatX to avoid float64 upcasting in theano
-
-            a *= K.cast(mask, K.floatx())
-
-
-
-        # in some cases especially in the early stages of training the sum may be almost zero
-
-        # and this results in NaN's. A workaround is to add a very small positive number ε to the sum.
-
-        # a /= K.cast(K.sum(a, axis=1, keepdims=True), K.floatx())
-
-        a /= K.cast(K.sum(a, axis=1, keepdims=True) + K.epsilon(), K.floatx())
-
-
-
-        weighted_input = x * K.expand_dims(a)
-
-
-
-        result = K.sum(weighted_input, axis=1)
-
-
-
-        if self.return_attention:
-
-            return [result, a]
-
-        return result
-
-
-
-    def compute_output_shape(self, input_shape):
-
-        if self.return_attention:
-
-            return [(input_shape[0], input_shape[-1]),
-
-                    (input_shape[0], input_shape[1])]
-
+        if self.layer.stateful:
+            initial_states = self.layer.states
         else:
+            initial_states = self.layer.get_initial_states(x)
+        constants = self.get_constants(x)
+        preprocessed_input = self.layer.preprocess_input(x)
 
-            return input_shape[0], input_shape[-1]
+
+        last_output, outputs, states = K.rnn(self.step, preprocessed_input,
+                                             initial_states,
+                                             go_backwards=self.layer.go_backwards,
+                                             mask=mask,
+                                             constants=constants,
+                                             unroll=self.layer.unroll,
+                                             input_length=input_shape[1])
+        if self.layer.stateful:
+            self.updates = []
+            for i in range(len(states)):
+                self.updates.append((self.layer.states[i], states[i]))
+
+        if self.layer.return_sequences:
+            return outputs
+        else:
+            return last_output
+
+
+
+
+# this is a copy of tensorflow with simplified matrix algebra, need to check I didn't make a mistkae
+class SimplifiedAttention(Wrapper):
+    def __init__(self, layer, attn_activation='tanh', **kwargs):
+        assert isinstance(layer, Recurrent)
+        if not layer.return_sequences:
+            raise Exception("AttentionLSTMWrapper doesn't support RNN's with return_sequences=False")
+
+        self.supports_masking = True
+        super(SimplifiedAttention, self).__init__(layer, **kwargs)
+
+    def build(self, input_shape):
+        assert len(input_shape) >= 3
+        self.input_spec = [InputSpec(shape=input_shape)]
+        nb_samples, nb_time, input_dim = input_shape
+
+        if not self.layer.built:
+            self.layer.build(input_shape)
+            self.layer.built = True
+
+        super(SimplifiedAttention, self).build()
+
+#         self.W1 = self.layer.init((input_dim, input_dim, 1, 1), name='{}_W1'.format(self.name))
+        self.W1 = self.layer.init((input_dim, input_dim), name='{}_W1'.format(self.name))
+#         self.W2 = self.layer.init((input_dim,nb_time), name='{}_W2'.format(self.name))
+        self.W2 = self.layer.init((nb_time,input_dim,input_dim), name='{}_W2'.format(self.name))
+        self.b2 = K.zeros((input_dim,), name='{}_b2'.format(self.name))
+        self.W3 = self.layer.init((input_dim*2, input_dim), name='{}_W3'.format(self.name))
+        self.b3 = K.zeros((input_dim,), name='{}_b3'.format(self.name))
+        self.V = self.layer.init((input_dim,), name='{}_V'.format(self.name))
+
+        self.trainable_weights = [self.W1, self.W2, self.W3, self.V, self.b2, self.b3]
+
+    def get_output_shape_for(self, input_shape):
+        return self.layer.get_output_shape_for(input_shape)
+
+    def step(self, x, states):
+
+        # First, we calculate new attention masks:
+        #   attn = softmax(V^T * tanh(W2 * inputs + W1 * prev_h))
+        # and then weight the previous state by the attention
+        #   prev_h = prev_h * attn
+        # and we make the input as a concatenation of the input and weighted inputs which is then
+        # transformed back to the shape x of using W3
+        #   x = W3*(x+X*attn)+b3
+        # Then, we run the cell on a combination of the input and previous attention masks:
+        #   h, state = cell(x, h).
+
+        nb_samples, nb_time, input_dim = self.input_spec[0].shape
+        h,c,B_U,B_W,xW2,X = states
+
+#         # as in tensorflow
+#         Xr = K.reshape(X,(-1,nb_time,input_dim,1))
+#         Xrt = K.permute_dimensions(Xr, (0, 2, 1, 3))
+#         xW1t = K.conv2d(Xrt,self.W1,border_mode='same') # could be cached
+#         xW1 = K.permute_dimensions(xW1t, (0, 2, 1, 3))
+
+        # or (input_dim,input_dim)x(nb_samples, nb_time, input_dim)=>(nb_samples, nb_time, input_dim)
+        # same value once reshaped, need to take away the extra dims
+        xW1 = K.dot(X,self.W1)
+
+        # assert hW1.shape == Xr.shape
+        hW2 = K.dot(h,self.W2)+self.b2
+#         xW2 = K.reshape(xW2,(-1,1,input_dim,1))
+        u = K.tanh(xW1+hW2)
+        a = K.sum(self.V*u,-1)
+        # assert a.shape==(nb_samples,nb_time)
+        a = K.softmax(a)
+        a = K.reshape(a,(-1, nb_time, 1))
+        Xa = K.sum(a*X,1)
+        Xa = K.reshape(Xa,(-1,input_dim))
+
+        # Merge input and previous attentions into one vector of the right size.
+        # TODO, deal with the consume_less='cpu' flag which reshapes x
+        x = K.dot(K.concatenate([x,Xa],1),self.W3)+self.b3
+        # assert x.shape == (nb_samples,input_dim)
+
+
+
+
+        h, new_states = self.layer.step(x, [h,c,B_U,B_W])
+#         new_states.append(a)
+#         Tracer()()
+        return h, new_states
+
+    def get_constants(self, x):
+        constants = self.layer.get_constants(x)
+        # Calculate K.dot(x, W2) only once per sequence by making it a constant
+#         # as in tensorflow
+#         self.W1 = self.layer.init((input_dim, input_dim, 1, 1), name='{}_W1'.format(self.name))
+#         Xr = K.reshape(x,(-1,nb_time,input_dim,1))
+#         Xrt = K.permute_dimensions(Xr, (0, 2, 1, 3))
+#         xW1t = K.conv2d(Xrt,self.W1,border_mode='same') # could be cached
+#         xW1 = K.permute_dimensions(xW1t, (0, 2, 1, 3))
+
+        # or just
+#         self.W1 = self.layer.init((input_dim, input_dim), name='{}_W1'.format(self.name))
+        xW1 = K.dot(x,self.W1)
+
+        constants.append(xW1)
+        # the need to provide X to the step function too so it can be weighted to produce the inputs
+        constants.append(x)
+        return constants
+
+    def call(self, x, mask=None):
+        # input shape: (nb_samples, time (padded with zeros), input_dim)
+        input_shape = self.input_spec[0].shape
+        if K._BACKEND == 'tensorflow':
+            if not input_shape[1]:
+                raise Exception('When using TensorFlow, you should define '
+                                'explicitly the number of timesteps of '
+                                'your sequences.\n'
+                                'If your first layer is an Embedding, '
+                                'make sure to pass it an "input_length" '
+                                'argument. Otherwise, make sure '
+                                'the first layer has '
+                                'an "input_shape" or "batch_input_shape" '
+                                'argument, including the time axis. '
+                                'Found input shape at layer ' + self.name +
+                                ': ' + str(input_shape))
+
+        if self.layer.stateful:
+            initial_states = self.layer.states
+        else:
+            initial_states = self.layer.get_initial_states(x)#+[K.ones((input_shape[0],input_shape[1]))]
+        constants = self.get_constants(x)
+        preprocessed_input = self.layer.preprocess_input(x)
+
+        last_output, outputs, states = K.rnn(self.step, preprocessed_input,
+                                             initial_states,
+                                             go_backwards=self.layer.go_backwards,
+                                             mask=mask,
+                                             constants=constants,
+                                             unroll=self.layer.unroll,
+                                             input_length=input_shape[1])
+        if self.layer.stateful:
+            self.updates = []
+            for i in range(len(states)):
+                self.updates.append((self.layer.states[i], states[i]))
+
+        if self.layer.return_sequences:
+            return outputs
+        else:
+            return last_output
+
 
 #---------------------------------------------------------LSTM----------------------------------------------------------------
 from keras.layers import Dense, Activation, Dropout, Bidirectional, Flatten, RepeatVector, Permute, Lambda, merge, TimeDistributed
@@ -510,13 +570,11 @@ class VGG16LSTMVideoClassifier(object):
 
     def create_model(self):
         model = Sequential()
-        model.add(TimeDistributed(LSTM(units=HIDDEN_UNITS, return_sequences=False, dropout=0.5)), input_shape=(None, 1, self.num_input_tokens))
-        model.add(Attention())
+        model.add(AttentionLSTM(LSTM(units=HIDDEN_UNITS, return_sequences=False, dropout=0.5, input_shape=(None, 1, self.num_input_tokens), comsume_less='gpu')
         model.add(Dense(512, activation='relu'))
         model.add(Dropout(0.5))
         model.add(Dense(self.nb_classes))
         model.add(Activation('softmax'))
-
         model.compile(loss='categorical_crossentropy', optimizer='rmsprop', metrics=['accuracy'])
         return model
 
