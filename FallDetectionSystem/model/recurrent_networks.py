@@ -261,6 +261,7 @@ class VGG16LSTMVideoClassifier(object):
             return model_dir_path + '/' + VGG16LSTMVideoClassifier.model_name + '-hi-dim-architecture.json'
 
     def create_model(self):
+        lstm_section.add(Sequential())
         lstm_section.add(LSTM(units=HIDDEN_UNITS, input_shape=(None, self.num_input_tokens), return_sequences=False, dropout=0.5))
         lstm_section.add(Dropout(0.3))
         lstm_section.add(Dense(1,activation='sigmoid'))
