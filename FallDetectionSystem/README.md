@@ -15,7 +15,8 @@ pip install -r requirements.txt
 
 python vgg16_lstm_train.py 
 ```
-
+The default dataset used is UCF101
+To change to another dataset, go to utility/UCF101_loader and change the line: 
 
 # Evaluation Report
 
