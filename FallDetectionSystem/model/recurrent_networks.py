@@ -14,7 +14,7 @@ from keras import backend as K
 from keras.engine import InputSpec
 from keras.layers import LSTM, activations, Wrapper, Recurrent
 
-class AttentionLSTM(Wrapper):
+class Attention(Wrapper):
     """
     This wrapper will provide an attention layer to a recurrent layer.
 
