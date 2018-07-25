@@ -70,7 +70,7 @@ class AttentionLSTM(LSTM):
 
         self.attn_activation = activations.get(attn_activation)
 
-        self.attn_init = initializations.get(attn_init)
+        self.attn_init = initializers.get(attn_init)
 
         self.output_alpha = output_alpha
 
