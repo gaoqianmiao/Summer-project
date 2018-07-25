@@ -1,4 +1,5 @@
-from keras.layers import LSTM, activations, initializers
+from keras.layers import LSTM
+from keras import activations, initializers
 
 class AttentionLSTM(LSTM):
 
