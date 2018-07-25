@@ -80,13 +80,14 @@ class AttentionLSTM(LSTM):
 
 
     def build(self, input_shape):
+        '''
 
         if not (isinstance(input_shape, list) and len(input_shape) == 2):
 
             raise Exception('Input to AttentionLSTM must be a list of '
 
                             'two tensors [lstm_input, attn_input].')
-
+        '''
 
 
         input_shape, attn_input_shape = input_shape
