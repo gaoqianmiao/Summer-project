@@ -12,9 +12,9 @@ def main():
     K.set_image_dim_ordering('tf')
     sys.path.append(patch_path('..'))
 
-    from keras_video_classifier.library.recurrent_networks import VGG16BidirectionalLSTMVideoClassifier
+    from model.recurrent_networks import VGG16BidirectionalLSTMVideoClassifier
     #from keras_video_classifier.library.utility.plot_utils import plot_and_save_history
-    from keras_video_classifier.library.utility.ucf.UCF101_loader import load_ucf
+    from utility.UCF101_loader import load_ucf
 
     data_set_name = 'UCF-101'
     input_dir_path = patch_path('very_large_data')
