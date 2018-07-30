@@ -6,8 +6,8 @@ import os
 def main():
     sys.path.append(os.path.join(os.path.dirname(__file__), '..'))
 
-    from keras_video_classifier.library.recurrent_networks import VGG16BidirectionalLSTMVideoClassifier
-    from keras_video_classifier.library.utility.ucf.UCF101_loader import load_ucf, scan_ucf_with_labels
+    from model.recurrent_networks import VGG16BidirectionalLSTMVideoClassifier
+    from utility.UCF101_loader import load_ucf, scan_ucf_with_labels
 
     vgg16_include_top = False
     data_dir_path = os.path.join(os.path.dirname(__file__), 'very_large_data')
