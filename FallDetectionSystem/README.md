@@ -8,15 +8,20 @@ Keras implementation of video classifiers
 
 ### Train Deep Learning model
 
-To train a deep learning model, say VGG16BidirectionalLSTMVideoClassifier, run the following commands:
+To train a deep learning model, run the following commands:
 
 ```bash
+python cnn_bidirectional_lstm_train.py 
+```
 
-python vgg16_lstm_train.py 
+To test the model: 
+```bash
+python cnn_bidirectional_lstm_predict.py 
 
 ```
+
 The default dataset used is UCF101
-To change to another dataset, go to utility/UCF101_loader and change the line: 
+To change to another dataset, go to utility/UCF101_loader and change the data_set_name parameter in its fit() method to other dataset name instead of UCF-101 will allow it to be trained on other video datasets
 
 # Evaluation Report
 
@@ -24,13 +29,31 @@ To change to another dataset, go to utility/UCF101_loader and change the line:
 
 ### Evaluate Convolutional Network
 
+```bash
+
+python cnn_train.py 
+
+```
+
 The Convolutional Network: (accuracy around 22.73% for training and 28.75% for validation)
 
 ### Evaluate CNN+LSTM
 
+```bash
+
+python cnn_lstm_train.py 
+
+```
+
 The LSTM with 3D CNN feature extractor: (accuracy around 68.9% for training and 75% for validation)
 
 ### Evaluate CNN+Bidirectional-LSTM
+
+```bash
+
+python cnn_bidirectional_lstm_train.py 
+
+```
 
 The bidirectional LSTM with 3D CNN feature extractor: (accuracy around 91.97% for training and 80% for validation)
 
