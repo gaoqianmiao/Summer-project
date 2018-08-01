@@ -1,10 +1,10 @@
 import numpy as np
 from keras import backend as K
 import os
-from keras_video_classifier.library.utility.plot_utils import plot_and_save_history
+#from keras_video_classifier.library.utility.plot_utils import plot_and_save_history
 
-from keras_video_classifier.library.convolutional import CnnVideoClassifier
-from keras_video_classifier.library.utility.ucf.UCF101_loader import load_ucf
+from model.convolutional import CnnVideoClassifier
+from utility.UCF101_loader import load_ucf
 
 K.set_image_dim_ordering('tf')
 
@@ -30,8 +30,7 @@ def main():
                              data_set_name=data_set_name,
                              max_frames=10)
 
-    plot_and_save_history(history, CnnVideoClassifier.model_name,
-                          report_dir_path + '/' + CnnVideoClassifier.model_name + '-history.png')
+    #plot_and_save_history(history, CnnVideoClassifier.model_name, report_dir_path + '/' + CnnVideoClassifier.model_name + '-history.png')
 
 
 if __name__ == '__main__':
