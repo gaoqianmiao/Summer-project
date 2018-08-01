@@ -21,7 +21,7 @@ Too install, simply run:
 ```bash
 
 pip install -r requirements.txt
-pip install -r requirements.txt
+pip install -r requirements-on-my-python-env.txt 
 
 ```
 References
