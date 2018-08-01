@@ -8,8 +8,8 @@ def main():
     K.set_image_dim_ordering('tf')
     sys.path.append(os.path.join(os.path.dirname(__file__), '..'))
 
-    from keras_video_classifier.library.recurrent_networks import VGG16LSTMVideoClassifier
-    from keras_video_classifier.library.utility.ucf.UCF101_loader import load_ucf, scan_ucf_with_labels
+    from model.recurrent_networks import VGG16LSTMVideoClassifier
+    from utility.UCF101_loader import load_ucf, scan_ucf_with_labels
 
     vgg16_include_top = True
     data_dir_path = os.path.join(os.path.dirname(__file__), 'very_large_data')
