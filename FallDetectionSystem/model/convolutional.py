@@ -6,8 +6,8 @@ from keras.utils import np_utils
 from sklearn.model_selection import train_test_split
 from keras.utils.vis_utils import plot_model
 
-from utility.frame_extractors.frame_extractor import scan_and_extract_videos_for_conv2d, \
-    extract_videos_for_conv2d
+from utility.frame_extractor import scan_and_extract_videos_for_conv3d, \
+    extract_videos_for_conv3d
 
 BATCH_SIZE = 32
 NUM_EPOCHS = 20
