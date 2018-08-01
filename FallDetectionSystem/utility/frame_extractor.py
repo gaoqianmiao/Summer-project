@@ -45,7 +45,7 @@ def extract_features(video_input_file_path, feature_output_file_path):
     return unscaled_features
 
 
-def extract_videos_for_conv2d(video_input_file_path, feature_output_file_path, max_frames):
+def extract_videos_for_conv3d(video_input_file_path, feature_output_file_path, max_frames):
     if feature_output_file_path is not None:
         if os.path.exists(feature_output_file_path):
             return np.load(feature_output_file_path)
@@ -134,7 +134,7 @@ def scan_and_extract_features(data_dir_path, data_set_name=None):
     return x_samples, y_samples
 
 
-def scan_and_extract_videos_for_conv2d(data_dir_path, data_set_name=None, max_frames=None):
+def scan_and_extract_videos_for_conv3d(data_dir_path, data_set_name=None, max_frames=None):
     if data_set_name is None:
         data_set_name = 'UCF-101'
     if max_frames is None:
