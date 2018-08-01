@@ -16,7 +16,7 @@ Known to work with the following python packages:
 - tensorflow
 - other requirements
 
-Too install, simply run:
+To install, simply run:
 
 ```bash
 
