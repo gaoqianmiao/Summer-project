@@ -14,9 +14,13 @@ Prerequisites
 Known to work with the following python packages:
 - Keras
 - tensorflow
+- other requirements
+
+Too install, simply run:
 
 ```bash
 
+pip install -r requirements.txt
 pip install -r requirements.txt
 
 ```
