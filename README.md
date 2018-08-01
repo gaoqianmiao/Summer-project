@@ -14,7 +14,8 @@ Prerequisites
 Known to work with the following python packages:
 - Keras
 - tensorflow
--pip install 
+
+pip install -r requirements.txt
 References
 ==========
 
