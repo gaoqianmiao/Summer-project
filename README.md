@@ -15,7 +15,11 @@ Known to work with the following python packages:
 - Keras
 - tensorflow
 
+```bash
+
 pip install -r requirements.txt
+
+```
 References
 ==========
 
