@@ -27,15 +27,7 @@ To change to another dataset, go to utility/UCF101_loader and change the data_se
 
 20 classes from UCF101 is used to train the video classifier. 30 epochs are set for the training
 
-### Evaluate Convolutional Network
 
-```bash
-
-python cnn_train.py 
-
-```
-
-The Convolutional Network: (accuracy around 22.73% for training and 28.75% for validation)
 
 ### Evaluate CNN+LSTM
 
@@ -58,6 +50,15 @@ python cnn_bidirectional_lstm_train.py
 The bidirectional LSTM with 3D CNN feature extractor: (accuracy around 91.97% for training and 80% for validation)
 
 # Note 
+### Evaluate Convolutional Network
+
+```bash
+
+python cnn_train.py 
+
+```
+
+The Convolutional Network: (accuracy around 22.73% for training and 28.75% for validation)
 
 ### Configure Keras to run on GPU on Windows
 
